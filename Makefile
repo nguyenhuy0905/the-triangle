@@ -25,7 +25,7 @@ nuke:
 $(BUILD_DIR)/main: glad-include/ glad-gl.o main.c \
 			common.h render.a \
 		$(shell pkgconf --libs glfw3) 
-	@echo "Run with environment ASAN_OPTIONS=detect_leak=0"
+	@echo "Run with environment ASAN_OPTIONS=detect_leaks=0"
 	@echo "Cuz the weak willed people can't let the kernel clean up stuff"
 	@echo "On Linux, it might be fontconfig being based"
 	$(CC) main.c $(shell pkgconf --libs --cflags glfw3) \
@@ -41,10 +41,7 @@ $(RENDER_OBJ_FILES): $(BUILD_DIR)/render/%.o: render/%.c glad-gl.o glad-include/
 	@mkdir -p $(BUILD_DIR)/render
 	$(CC) $< \
 		-c \
-		-I$(BUILD_DIR)/glad-include \
-		-Ishaders \
 		$(CC_FLAGS) \
-		$(BUILD_DIR) \
 		-o $@
 
 $(BUILD_DIR)/glad-gl.o: glad-src/ glad-include/
