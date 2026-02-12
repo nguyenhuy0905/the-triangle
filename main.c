@@ -153,6 +153,7 @@ int main() {
     glfwSetKeyCallback(window, win_key_callback);
     // cap FPS
     glfwSwapInterval(1);
+    glClearColor(36.0f/255.0f, 39.0f/255.0f, 58.0f/255.0f, 1.0f);
     while(!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(program);
