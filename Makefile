@@ -11,6 +11,7 @@ all: $(BUILD_DIR)/main
 
 override RENDER_OBJ_FILES := $(patsubst render/%.c,$(BUILD_DIR)/render/%.o,\
 	$(wildcard render/*.c))
+override SHADER_FILES := $(wildcard shaders/*.glsl)
 override OPTIMIZE_FLAG := $(if $(filter Debug,$(BUILD_TYPE)),$(DEBUG_BUILD_FLAG),\
 	$(if $(filter Release,$(BUILD_TYPE)),$(RELEASE_BUILD_FLAG),\
 	$(if $(filter RelWithDeb,$(BUILD_TYPE),$(REL_WITH_DEB_BUILD_FLAG)))))
@@ -36,13 +37,14 @@ $(BUILD_DIR)/render.a: $(RENDER_OBJ_FILES)
 	$(AR) rcs $@ $^
 
 $(RENDER_OBJ_FILES): $(BUILD_DIR)/render/%.o: render/%.c glad-gl.o glad-include/ \
-		common.h
+		common.h $(SHADER_FILES)
 	@mkdir -p $(BUILD_DIR)/render
 	$(CC) $< \
 		-c \
 		-I$(BUILD_DIR)/glad-include \
 		-Ishaders \
 		$(CC_FLAGS) \
+		$(BUILD_DIR) \
 		-o $@
 
 $(BUILD_DIR)/glad-gl.o: glad-src/ glad-include/

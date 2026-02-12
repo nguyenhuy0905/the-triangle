@@ -12,6 +12,10 @@
  */
 int init_gl(int version_major, int version_minor);
 
+// FPS CAPPING
+void set_max_fps(float fps);
+float get_max_fps();
+
 /**
  * @brief Given a shader whose source is already set via `glShaderSource`,
  * compile that shader, and print out any error that occured.

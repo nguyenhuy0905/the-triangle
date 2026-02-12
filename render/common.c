@@ -6,6 +6,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct config {
+    struct {
+        // in milliseconds
+        float frame_time;
+    } timing;
+};
+
+static struct config cfg = {0};
+
 int init_gl(int version_major, int version_minor) {
     if(!glfwInit()) {
         printf("Initialization failed!\n");
@@ -17,6 +26,14 @@ int init_gl(int version_major, int version_minor) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     return 0;
+}
+
+void set_max_fps(float fps) {
+    cfg.timing.frame_time = 1000.0f/fps;
+}
+
+float get_max_fps() {
+    return 1000.0f/cfg.timing.frame_time;
 }
 
 int compile_shader(GLuint shader) {
