@@ -1,6 +1,7 @@
 #include "common.h"
 #include "render.h"
 #include <assert.h>
+// must include glad before GLFW
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <stdio.h>
