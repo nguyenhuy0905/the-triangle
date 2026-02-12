@@ -30,3 +30,9 @@ void err_callback(int err, const char* desc);
  */
 void close_win_callback(GLFWwindow* window, int key, int scancode,
         int action, int mode);
+
+// WINDOW SIZE
+/**
+ * @brief Set viewport to the width and height of the window.
+ */
+void set_viewport(GLFWwindow* window);

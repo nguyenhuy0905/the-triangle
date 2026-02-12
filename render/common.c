@@ -51,3 +51,12 @@ void close_win_callback(GLFWwindow* window, int key, int scancode,
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     }
 }
+
+void set_viewport(GLFWwindow* window) {
+    assert(window != nullptr);
+    int width = 0;
+    int height = 0;
+    glfwGetFramebufferSize(window, &width, &height);
+    assert(width > 0 && height > 0);
+    glViewport(0, 0, width, height);
+}

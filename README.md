@@ -4,8 +4,8 @@
 ![Sample console and graphical output.](./media/triangle.png)
 
 ## What
-- A [Catppuccin Mauve-colored](https://catppuccin.com/palette/) triangle at the
-  corner of the screen.
+- A [Catppuccin Mauve-colored](https://catppuccin.com/palette/) triangle in the
+  middle of the screen.
 
 ## Build prerequisites
 - You need an operating system that supports OpenGL 4.6 (aka, anything but

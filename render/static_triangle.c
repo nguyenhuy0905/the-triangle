@@ -18,9 +18,9 @@ static const GLchar fragment_shader_content[] = {
 };
 
 static const GLfloat triangle_vertices[] = {
-    0.0f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
+    0.0f, 0.25f, 0.0f,
+    0.25f, -0.25f, 0.0f,
+    -0.25f, -0.25f, 0.0f
 };
 
 int render_static_triangle() {
@@ -116,6 +116,8 @@ int render_static_triangle() {
     glfwSwapInterval(1);
     glClearColor(36.0f/255.0f, 39.0f/255.0f, 58.0f/255.0f, 1.0f);
     while(!glfwWindowShouldClose(window)) {
+        set_viewport(window);
+
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(program);
         glDrawArrays(GL_TRIANGLES, 0, 3);
