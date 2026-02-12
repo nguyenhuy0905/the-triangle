@@ -89,6 +89,10 @@ int render_static_triangle() {
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);
+    glDetachShader(program, vertex_shader);
+    glDetachShader(program, fragment_shader);
+
+    // check if there's any program linking error
     GLint is_linked = 0;
     glGetProgramiv(program, GL_LINK_STATUS, (int*)&is_linked);
     if(is_linked == GL_FALSE) {
@@ -120,14 +124,12 @@ int render_static_triangle() {
     }
 
 nuke_fragment_shader:
-    glDetachShader(program, fragment_shader);
     glDeleteShader(fragment_shader);
 //nuke_vertex_buffer:
     glDeleteBuffers(1, &vertex_buffer_obj);
 //nuke_vertex_arrays:
     glDeleteVertexArrays(1, &vertex_array_obj);
 nuke_gl_program:
-    glDetachShader(program, vertex_shader);
     glDeleteProgram(program);
 nuke_vertex_shader:
     glDeleteShader(vertex_shader);
