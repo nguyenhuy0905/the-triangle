@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// requires `int ret` to be declared before use
+#define ERR_JUMP(retcode, jump) \
+    do { ret = retcode; goto jump; } while(0)
+
 static void err_callback(int err, const char* desc) {
     fprintf(stderr, "Error: %s\n", desc);
 }
@@ -33,23 +37,50 @@ static const GLfloat triangle_vertices[] = {
     -0.5f, -0.5f, 0.0f
 };
 
-int main() {
+int init_gl(int version_major, int version_minor) {
     if(!glfwInit()) {
         printf("Initialization failed!\n");
-        return 69;
+        return 1;
     }
 
     glfwSetErrorCallback(err_callback);
     // give me the latest and greatest
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, version_major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, version_minor);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    return 0;
+}
+
+int compile_shader(GLuint shader) {
+    glCompileShader(shader);
+    // check if we successfully compile the vertex shader
+    GLint success = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if(success == GL_FALSE) {
+        fprintf(stderr, "Vertex shader fail to compile:\n");
+        GLint log_size = 0;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &log_size);
+        GLchar* err_report_buff = (GLchar*)malloc(log_size + 1);
+        memset(err_report_buff, 0, log_size + 1);
+        glGetShaderInfoLog(shader, log_size, nullptr, err_report_buff);
+        fprintf(stderr, "%s\n", err_report_buff);
+        free(err_report_buff);
+        return 1;
+    }
+    return 0;
+}
+
+int main() {
+    int ret = 0;
+    if(ret = init_gl(4, 6), ret != 0) {
+        ERR_JUMP(1, nuke);
+    }
 
     GLFWwindow* window = glfwCreateWindow(600, 400, "Hello, World",
             nullptr, nullptr);
     if(!window) {
         fprintf(stderr, "Window or context creation failed!\n");
-        goto nuke_glfw;
+        ERR_JUMP(1, nuke_glfw);
     }
 
     glfwMakeContextCurrent(window);
@@ -57,7 +88,7 @@ int main() {
     int glad_ver = gladLoadGL(glfwGetProcAddress);
     if(glad_ver == 0) {
         fprintf(stderr, "Init OpenGL context failed\n");
-        goto nuke_window;
+        ERR_JUMP(1, nuke_window);
     }
     printf("OpenGL version: %d.%d\n", GLAD_VERSION_MAJOR(glad_ver),
             GLAD_VERSION_MINOR(glad_ver));
@@ -68,22 +99,9 @@ int main() {
     printf("Vertex shader content: %s\n", vertex_shader_content);
     glShaderSource(vertex_shader, 1, (const GLchar*[]){vertex_shader_content},
             (const GLint[]){sizeof(vertex_shader_content) - 1});
-    glCompileShader(vertex_shader);
-    // check if we successfully compile the vertex shader
-    GLint success = 0;
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if(success == GL_FALSE) {
-        fprintf(stderr, "Vertex shader fail to compile:\n");
-        GLint log_size = 0;
-        glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &log_size);
-        GLchar* err_report_buff = (GLchar*)malloc(log_size + 1);
-        memset(err_report_buff, 0, log_size + 1);
-        glGetShaderInfoLog(vertex_shader, log_size, nullptr, err_report_buff);
-        fprintf(stderr, "%s\n", err_report_buff);
-        free(err_report_buff);
-        goto nuke_vertex_shader;
+    if(compile_shader(vertex_shader) != 0) {
+        ERR_JUMP(1, nuke_vertex_shader);
     }
-    // compilation success!!
 
     // apparently, we need this to hold vertex attributes, so that the
     // rendering pipeline knows what to do with our vertices.
@@ -107,22 +125,9 @@ int main() {
     printf("Fragment shader content: %s\n", fragment_shader_content);
     glShaderSource(fragment_shader, 1, (const GLchar*[]){fragment_shader_content},
             (const GLint[]){sizeof(fragment_shader_content) - 1});
-    glCompileShader(fragment_shader);
-    // check if we successfully compile the fragment shader
-    success = 0;
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if(success == GL_FALSE) {
-        fprintf(stderr, "fragment shader fail to compile:\n");
-        GLint log_size = 0;
-        glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &log_size);
-        GLchar* err_report_buff = (GLchar*)malloc(log_size + 1);
-        memset(err_report_buff, 0, log_size + 1);
-        glGetShaderInfoLog(fragment_shader, log_size, nullptr, err_report_buff);
-        fprintf(stderr, "%s\n", err_report_buff);
-        free(err_report_buff);
-        goto nuke_fragment_shader;
+    if(compile_shader(fragment_shader) != 0) {
+        ERR_JUMP(1, nuke_fragment_shader);
     }
-    // compilation success!!
 
     // now create a program to flash(?) the shader
     GLuint program = glCreateProgram();
@@ -141,7 +146,7 @@ int main() {
         glGetProgramInfoLog(program, log_size, nullptr, err_report_buff);
         fprintf(stderr, "%s\n", err_report_buff);
         free(err_report_buff);
-        goto nuke_gl_program;
+        ERR_JUMP(1, nuke_gl_program);
     }
 
     // press escape -> escape, mind-blowing
@@ -172,5 +177,6 @@ nuke_window:
     glfwDestroyWindow(window);
 nuke_glfw:
     glfwTerminate();
-    return 0;
+nuke:
+    return ret;
 }
