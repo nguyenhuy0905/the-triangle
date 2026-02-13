@@ -1,0 +1,22 @@
+---
+Checks:          'clang-diagnostic-*,clang-analyzer-*'
+WarningsAsErrors: ''
+HeaderFileExtensions:
+  - ''
+  - h
+  - hh
+  - hpp
+  - hxx
+ImplementationFileExtensions:
+  - c
+  - cc
+  - cpp
+  - cxx
+HeaderFilterRegex: ''
+ExcludeHeaderFilterRegex: ''
+FormatStyle:     none
+User:            huynguyen
+CheckOptions:    {}
+SystemHeaders:   false
+...
+
