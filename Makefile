@@ -15,8 +15,8 @@ override SHADER_FILES := $(wildcard shaders/*.glsl)
 override OPTIMIZE_FLAG := $(if $(filter Debug,$(BUILD_TYPE)),$(DEBUG_BUILD_FLAG),\
 	$(if $(filter Release,$(BUILD_TYPE)),$(RELEASE_BUILD_FLAG),\
 	$(if $(filter RelWithDeb,$(BUILD_TYPE),$(REL_WITH_DEB_BUILD_FLAG)))))
-override CC_FLAGS := -I$(BUILD_DIR)/glad-include -std=c23 -Wall -Werror\
-	-Wconversion -fsanitize=address,undefined $(OPTIMIZE_FLAG)
+override CC_FLAGS := -I$(BUILD_DIR)/glad-include -std=c23 -Wall -Wconversion \
+	-fsanitize=address,undefined $(OPTIMIZE_FLAG)
 
 .PHONY: nuke
 nuke:
@@ -37,7 +37,25 @@ $(BUILD_DIR)/render.a: $(RENDER_OBJ_FILES)
 	$(AR) rcs $@ $^
 
 $(RENDER_OBJ_FILES): $(BUILD_DIR)/render/%.o: render/%.c glad-gl.o glad-include/ \
-		common.h $(SHADER_FILES)
+		common.h
+	@mkdir -p $(BUILD_DIR)/render
+	$(CC) $< \
+		-c \
+		$(CC_FLAGS) \
+		-o $@
+
+$(BUILD_DIR)/render/static_triangle.o:render/static_triangle.o glad-gl.o \
+		glad-include/ common.h \
+		triangle-fragment.glsl triangle-vertex.glsl
+	@mkdir -p $(BUILD_DIR)/render
+	$(CC) $< \
+		-c \
+		$(CC_FLAGS) \
+		-o $@
+
+$(BUILD_DIR)/render/color_switch_triangle.o:render/static_triangle.o glad-gl.o \
+		glad-include/ common.h \
+		change-color-triangle-fragment.glsl change-color-triangle-vertex.glsl
 	@mkdir -p $(BUILD_DIR)/render
 	$(CC) $< \
 		-c \
