@@ -44,8 +44,8 @@ $(RENDER_OBJ_FILES): $(BUILD_DIR)/render/%.o: render/%.c glad-gl.o glad-include/
 		$(CC_FLAGS) \
 		-o $@
 
-$(BUILD_DIR)/render/static_triangle.o:render/static_triangle.o glad-gl.o \
-		glad-include/ common.h \
+$(BUILD_DIR)/render/static_triangle.o: render/static_triangle.c \
+		render/static_triangle.o glad-gl.o glad-include/ common.h \
 		triangle-fragment.glsl triangle-vertex.glsl
 	@mkdir -p $(BUILD_DIR)/render
 	$(CC) $< \
@@ -53,7 +53,8 @@ $(BUILD_DIR)/render/static_triangle.o:render/static_triangle.o glad-gl.o \
 		$(CC_FLAGS) \
 		-o $@
 
-$(BUILD_DIR)/render/color_switch_triangle.o:render/static_triangle.o glad-gl.o \
+$(BUILD_DIR)/render/color_switch_triangle.o: render/color_switch_triangle.c \
+		render/static_triangle.o glad-gl.o \
 		glad-include/ common.h \
 		change-color-triangle-fragment.glsl change-color-triangle-vertex.glsl
 	@mkdir -p $(BUILD_DIR)/render
