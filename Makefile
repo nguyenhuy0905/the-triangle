@@ -23,8 +23,7 @@ nuke:
 	rm -rf $(BUILD_DIR)/*
 
 $(BUILD_DIR)/main: glad-include/ glad-gl.o main.c \
-			common.h render.a \
-		$(shell pkgconf --libs glfw3) 
+			common.h render.a
 	@echo "Run with environment ASAN_OPTIONS=detect_leaks=0"
 	@echo "Cuz the weak willed people can't let the kernel clean up stuff"
 	@echo "On Linux, it might be fontconfig being based"
